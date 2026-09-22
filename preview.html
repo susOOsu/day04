@@ -37,7 +37,7 @@
       id: "아이디",
       created_at: "생성일",
       title: "제목",
-      amount: "금액",
+      amount: "소요시간",
       done: "완료",
       completed: "완료",
       is_complete: "완료",
@@ -45,7 +45,16 @@
       due_date: "마감일",
     };
 
+    const DATE_KEYS = ["created_at", "due_date", "inserted_at"];
+
     const pickKey = (todo, candidates) => candidates.find((key) => key in todo);
+
+    const formatDate = (value) => {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    };
 
     async function loadTodos() {
       const table = document.getElementById("todo-table");
@@ -93,6 +102,9 @@
                 if (col === titleKey) {
                   const isDone = doneKey ? Boolean(todo[doneKey]) : false;
                   return `<td class="${isDone ? "done" : ""}">${todo[col]}</td>`;
+                }
+                if (DATE_KEYS.includes(col)) {
+                  return `<td>${formatDate(todo[col])}</td>`;
                 }
                 return `<td>${todo[col]}</td>`;
               })
