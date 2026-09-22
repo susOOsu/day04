@@ -19,17 +19,33 @@
     }
     li {
       display: flex;
-      flex-wrap: wrap;
-      gap: 4px 16px;
-      padding: 10px 12px;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
       border: 1px solid #ddd;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 8px;
-      font-size: 14px;
+      background: #fff;
     }
-    .field b {
-      color: #555;
-      margin-right: 4px;
+    .todo-check {
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    .todo-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .todo-title {
+      font-size: 15px;
+    }
+    .todo-title.done {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .todo-meta {
+      font-size: 12px;
+      color: #888;
     }
     #message {
       color: #c00;
@@ -71,12 +87,36 @@
           return;
         }
 
+        const TITLE_KEYS = ["title", "task", "name", "content", "text"];
+        const DONE_KEYS = ["completed", "is_complete", "is_done", "done"];
+
+        const pickKey = (todo, candidates) =>
+          candidates.find((key) => key in todo);
+
         listEl.innerHTML = todos
           .map((todo) => {
-            const fields = Object.entries(todo)
-              .map(([key, value]) => `<span class="field"><b>${key}</b>: ${value}</span>`)
-              .join("");
-            return `<li>${fields}</li>`;
+            const titleKey = pickKey(todo, TITLE_KEYS);
+            const doneKey = pickKey(todo, DONE_KEYS);
+
+            const title = titleKey ? todo[titleKey] : "(제목 없음)";
+            const isDone = doneKey ? Boolean(todo[doneKey]) : false;
+
+            const metaEntries = Object.entries(todo).filter(
+              ([key]) => key !== titleKey && key !== doneKey
+            );
+            const meta = metaEntries
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(" · ");
+
+            return `
+              <li>
+                <span class="todo-check">${isDone ? "✅" : "⬜"}</span>
+                <span class="todo-body">
+                  <span class="todo-title${isDone ? " done" : ""}">${title}</span>
+                  ${meta ? `<span class="todo-meta">${meta}</span>` : ""}
+                </span>
+              </li>
+            `;
           })
           .join("");
       } catch (err) {
