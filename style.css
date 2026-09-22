@@ -13,12 +13,12 @@
 }
 
 body {
-  font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+  font-family: "궁서", "Gungsuh", serif;
   max-width: 700px;
   margin: 0 auto;
   padding: 0 20px 60px;
   background: var(--coral-bg);
-  color: var(--text);
+  color: #000;
 }
 
 header.site-header {
