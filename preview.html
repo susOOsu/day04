@@ -3,56 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Todos 미리보기</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 0 16px;
-    }
-    h1 {
-      font-size: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-    }
-    th {
-      background: #f5f5f5;
-      color: #555;
-      font-weight: 600;
-    }
-    tbody tr:hover {
-      background: #fafafa;
-    }
-    td.done {
-      text-decoration: line-through;
-      color: #888;
-    }
-    td.center {
-      text-align: center;
-    }
-    #message {
-      color: #c00;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="site-header">
+    <a class="brand" href="index.html">Day04</a>
+    <nav class="site-nav">
+      <a href="index.html">홈</a>
+      <a href="about.html">About</a>
+      <a href="preview.html" class="active">Todos</a>
+    </nav>
+  </header>
+
   <h1>Todos 목록</h1>
-  <p>
-    <a href="index.html">홈으로</a>
-  </p>
+  <p class="subtitle">Supabase에 저장된 할 일 데이터를 표로 보여줍니다.</p>
+
   <p id="message"></p>
-  <table id="todo-table" hidden>
-    <thead><tr id="todo-head"></tr></thead>
-    <tbody id="todo-body"></tbody>
-  </table>
+  <div class="card">
+    <table id="todo-table" hidden>
+      <thead><tr id="todo-head"></tr></thead>
+      <tbody id="todo-body"></tbody>
+    </table>
+  </div>
 
   <script>
     const SUPABASE_URL = "https://hdanrcibqlhotjnefsgg.supabase.co/rest/v1/";
