@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Todos 미리보기</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    h1 {
+      font-size: 20px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .field b {
+      color: #555;
+      margin-right: 4px;
+    }
+    #message {
+      color: #c00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Todos 목록</h1>
+  <p id="message"></p>
+  <ul id="todo-list"></ul>
+
+  <script>
+    const SUPABASE_URL = "https://hdanrcibqlhotjnefsgg.supabase.co/rest/v1/";
+    const SUPABASE_ANON_KEY = "sb_publishable_OFnr9fX_q0hrQHRQzWKJzA_X0dfb3RN";
+
+    async function loadTodos() {
+      const listEl = document.getElementById("todo-list");
+      const messageEl = document.getElementById("message");
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}test_todos?select=*`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`요청 실패: ${res.status} ${res.statusText}`);
+        }
+
+        const todos = await res.json();
+
+        if (todos.length === 0) {
+          messageEl.textContent = "데이터가 없습니다.";
+          return;
+        }
+
+        listEl.innerHTML = todos
+          .map((todo) => {
+            const fields = Object.entries(todo)
+              .map(([key, value]) => `<span class="field"><b>${key}</b>: ${value}</span>`)
+              .join("");
+            return `<li>${fields}</li>`;
+          })
+          .join("");
+      } catch (err) {
+        messageEl.textContent = `데이터를 불러오지 못했습니다: ${err.message}`;
+      }
+    }
+
+    loadTodos();
+  </script>
+</body>
+</html>
