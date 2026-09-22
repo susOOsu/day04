@@ -112,6 +112,24 @@ td.center {
   text-align: center;
 }
 
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.done {
+  background: var(--coral);
+  color: #fff;
+}
+
+.badge.pending {
+  background: var(--coral-line);
+  color: var(--text-muted);
+}
+
 #message {
   color: #c0503b;
   font-size: 14px;

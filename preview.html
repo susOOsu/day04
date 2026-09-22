@@ -33,6 +33,18 @@
     const TITLE_KEYS = ["title", "task", "name", "content", "text"];
     const DONE_KEYS = ["completed", "is_complete", "is_done", "done"];
 
+    const COLUMN_LABELS = {
+      id: "아이디",
+      created_at: "생성일",
+      title: "제목",
+      amount: "금액",
+      done: "완료",
+      completed: "완료",
+      is_complete: "완료",
+      is_done: "완료",
+      due_date: "마감일",
+    };
+
     const pickKey = (todo, candidates) => candidates.find((key) => key in todo);
 
     async function loadTodos() {
@@ -65,7 +77,7 @@
         const columns = Object.keys(todos[0]);
 
         headEl.innerHTML = columns
-          .map((col) => `<th>${col}</th>`)
+          .map((col) => `<th>${COLUMN_LABELS[col] ?? col}</th>`)
           .join("");
 
         bodyEl.innerHTML = todos
@@ -73,7 +85,10 @@
             const cells = columns
               .map((col) => {
                 if (col === doneKey) {
-                  return `<td class="center">${todo[col] ? "✅" : "⬜"}</td>`;
+                  const isDone = Boolean(todo[col]);
+                  const badgeClass = isDone ? "done" : "pending";
+                  const badgeText = isDone ? "완료" : "미완료";
+                  return `<td class="center"><span class="badge ${badgeClass}">${badgeText}</span></td>`;
                 }
                 if (col === titleKey) {
                   const isDone = doneKey ? Boolean(todo[doneKey]) : false;
