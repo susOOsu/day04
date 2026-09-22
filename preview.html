@@ -6,46 +6,37 @@
   <style>
     body {
       font-family: sans-serif;
-      max-width: 600px;
+      max-width: 700px;
       margin: 40px auto;
       padding: 0 16px;
     }
     h1 {
       font-size: 20px;
     }
-    ul {
-      list-style: none;
-      padding: 0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
     }
-    li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      background: #fff;
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
     }
-    .todo-check {
-      font-size: 18px;
-      line-height: 1.4;
+    th {
+      background: #f5f5f5;
+      color: #555;
+      font-weight: 600;
     }
-    .todo-body {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    tbody tr:hover {
+      background: #fafafa;
     }
-    .todo-title {
-      font-size: 15px;
-    }
-    .todo-title.done {
+    td.done {
       text-decoration: line-through;
       color: #888;
     }
-    .todo-meta {
-      font-size: 12px;
-      color: #888;
+    td.center {
+      text-align: center;
     }
     #message {
       color: #c00;
@@ -58,14 +49,24 @@
     <a href="index.html">홈으로</a>
   </p>
   <p id="message"></p>
-  <ul id="todo-list"></ul>
+  <table id="todo-table" hidden>
+    <thead><tr id="todo-head"></tr></thead>
+    <tbody id="todo-body"></tbody>
+  </table>
 
   <script>
     const SUPABASE_URL = "https://hdanrcibqlhotjnefsgg.supabase.co/rest/v1/";
     const SUPABASE_ANON_KEY = "sb_publishable_OFnr9fX_q0hrQHRQzWKJzA_X0dfb3RN";
 
+    const TITLE_KEYS = ["title", "task", "name", "content", "text"];
+    const DONE_KEYS = ["completed", "is_complete", "is_done", "done"];
+
+    const pickKey = (todo, candidates) => candidates.find((key) => key in todo);
+
     async function loadTodos() {
-      const listEl = document.getElementById("todo-list");
+      const table = document.getElementById("todo-table");
+      const headEl = document.getElementById("todo-head");
+      const bodyEl = document.getElementById("todo-body");
       const messageEl = document.getElementById("message");
 
       try {
@@ -87,38 +88,33 @@
           return;
         }
 
-        const TITLE_KEYS = ["title", "task", "name", "content", "text"];
-        const DONE_KEYS = ["completed", "is_complete", "is_done", "done"];
+        const titleKey = pickKey(todos[0], TITLE_KEYS);
+        const doneKey = pickKey(todos[0], DONE_KEYS);
+        const columns = Object.keys(todos[0]);
 
-        const pickKey = (todo, candidates) =>
-          candidates.find((key) => key in todo);
+        headEl.innerHTML = columns
+          .map((col) => `<th>${col}</th>`)
+          .join("");
 
-        listEl.innerHTML = todos
+        bodyEl.innerHTML = todos
           .map((todo) => {
-            const titleKey = pickKey(todo, TITLE_KEYS);
-            const doneKey = pickKey(todo, DONE_KEYS);
-
-            const title = titleKey ? todo[titleKey] : "(제목 없음)";
-            const isDone = doneKey ? Boolean(todo[doneKey]) : false;
-
-            const metaEntries = Object.entries(todo).filter(
-              ([key]) => key !== titleKey && key !== doneKey
-            );
-            const meta = metaEntries
-              .map(([key, value]) => `${key}: ${value}`)
-              .join(" · ");
-
-            return `
-              <li>
-                <span class="todo-check">${isDone ? "✅" : "⬜"}</span>
-                <span class="todo-body">
-                  <span class="todo-title${isDone ? " done" : ""}">${title}</span>
-                  ${meta ? `<span class="todo-meta">${meta}</span>` : ""}
-                </span>
-              </li>
-            `;
+            const cells = columns
+              .map((col) => {
+                if (col === doneKey) {
+                  return `<td class="center">${todo[col] ? "✅" : "⬜"}</td>`;
+                }
+                if (col === titleKey) {
+                  const isDone = doneKey ? Boolean(todo[doneKey]) : false;
+                  return `<td class="${isDone ? "done" : ""}">${todo[col]}</td>`;
+                }
+                return `<td>${todo[col]}</td>`;
+              })
+              .join("");
+            return `<tr>${cells}</tr>`;
           })
           .join("");
+
+        table.hidden = false;
       } catch (err) {
         messageEl.textContent = `데이터를 불러오지 못했습니다: ${err.message}`;
       }
